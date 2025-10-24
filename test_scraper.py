@@ -14,77 +14,6 @@ session.headers.update({
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
 })
 
-def get_all_product_urls():
-    """Get all product URLs from the main page and category pages"""
-    product_urls = set()
-    
-    try:
-        # Get main page
-        response = session.get(base_url)
-        response.raise_for_status()
-        soup = BeautifulSoup(response.content, 'html.parser')
-        
-        # Find all links that might be product links
-        links = soup.find_all('a', href=True)
-        
-        # Pattern to identify product URLs
-        product_patterns = [
-            r'/[^/]+-[^/]+-[^/]+$',  # URLs ending with three parts separated by dashes
-            r'/urun/',
-            r'/product/',
-            r'/p/'
-        ]
-        
-        for link in links:
-            href = str(link['href'])  # Convert to string
-            # Check if it's a relative URL starting with /
-            if href.startswith('/'):
-                # Check if it matches product patterns
-                for pattern in product_patterns:
-                    if re.search(pattern, href) and not href.endswith(('.jpg', '.png', '.gif', '.css', '.js')):
-                        full_url = urljoin(base_url, href)
-                        product_urls.add(full_url)
-        
-        print(f"Found {len(product_urls)} potential product URLs from main page")
-        
-        # Also check some category pages if needed
-        category_selectors = [
-            'a[href*="kategori"]',
-            'a[href*="category"]',
-            'a[href*="elbise"]',
-            'a[href*="bluz"]',
-            'a[href*="takim"]'
-        ]
-        
-        for selector in category_selectors:
-            category_links = soup.select(selector)
-            for cat_link in category_links[:3]:  # Limit to first 3 categories
-                try:
-                    cat_href = str(cat_link['href'])  # Convert to string
-                    if cat_href.startswith('/'):
-                        cat_url = urljoin(base_url, cat_href)
-                        print(f"Checking category: {cat_url}")
-                        cat_response = session.get(cat_url)
-                        cat_response.raise_for_status()
-                        cat_soup = BeautifulSoup(cat_response.content, 'html.parser')
-                        
-                        cat_links = cat_soup.find_all('a', href=True)
-                        for link in cat_links:
-                            href = str(link['href'])  # Convert to string
-                            for pattern in product_patterns:
-                                if re.search(pattern, href) and not href.endswith(('.jpg', '.png', '.gif', '.css', '.js')):
-                                    full_url = urljoin(base_url, href)
-                                    product_urls.add(full_url)
-                        time.sleep(1)  # Be respectful
-                except Exception as e:
-                    print(f"Error checking category: {e}")
-                    continue
-        
-        return list(product_urls)
-    except Exception as e:
-        print(f"Error getting product URLs: {e}")
-        return list(product_urls)
-
 def get_product_details(product_url):
     """Extract detailed product information with more specific selectors"""
     try:
@@ -354,24 +283,7 @@ def get_product_details(product_url):
         print(f"Error extracting product details from {product_url}: {e}")
         return None
 
-def get_sample_products():
-    """Get a sample of product URLs for testing"""
-    # These are some actual product URLs we found earlier
-    sample_urls = [
-        "https://www.bbeox.com/kadife-gold-detay-elbise-siyah",
-        "https://www.bbeox.com/kolsuz-balikci-yumos-triko-bordo",
-        "https://www.bbeox.com/asimetrik-yaka-poliamid-bluz-kahverengi",
-        "https://www.bbeox.com/gofre-halter-yaka-uzun-elbise-821",
-        "https://www.bbeox.com/askili-pole-premium-elbise-809",
-        "https://www.bbeox.com/interlok-hirka-tayt-takim-siyah",
-        "https://www.bbeox.com/tek-serit-hirka-takim-lacivert",
-        "https://www.bbeox.com/kemerli-vatka-detay-elbise-kahverengi",
-        "https://www.bbeox.com/triko-bodysuit-sort-takim-kahverengi",
-        "https://www.bbeox.com/kare-yaka-premium-crop-kahverengi"
-    ]
-    return sample_urls
-
-def save_to_csv(products_data, filename='bbeox_all_products.csv'):
+def save_to_csv(products_data, filename='test_product.csv'):
     """Save product data to CSV file"""
     # Flatten the data for CSV
     csv_data = []
@@ -396,42 +308,24 @@ def save_to_csv(products_data, filename='bbeox_all_products.csv'):
     return filename
 
 def main():
-    print("Starting final scraping of bbeox.com...")
+    # Test with the specific product URL you provided
+    test_url = "https://www.bbeox.com/kemerli-vatka-detay-elbise-acikkahve"
     
-    # Get ALL product URLs instead of just sample ones
-    print("Getting ALL product URLs...")
-    product_urls = get_all_product_urls()
-    print(f"Found {len(product_urls)} product URLs")
+    print("Testing scraper with specific product...")
+    product_info = get_product_details(test_url)
     
-    # Limit to a reasonable number to avoid taking too long
-    # Remove this limit if you want to scrape all products
-    # product_urls = product_urls[:50]  # Process first 50 products
-    
-    # Extract product information
-    products_data = []
-    for i, url in enumerate(product_urls):
-        print(f"Processing product {i+1}/{len(product_urls)}: {url}")
-        product_info = get_product_details(url)
-        if product_info:
-            products_data.append(product_info)
-        time.sleep(1)  # Be respectful with requests
-    
-    # Save to CSV
-    if products_data:
-        filename = save_to_csv(products_data)
-        print(f"Successfully scraped {len(products_data)} products and saved to {filename}")
+    if product_info:
+        print(f"Product Name: {product_info['name']}")
+        print(f"Price: {product_info['price']}")
+        print(f"Sizes: {product_info['sizes']}")
+        print(f"Variations: {product_info['variations']}")
+        print(f"Images: {len(product_info['images'])} images found")
         
-        # Display summary
-        print("\nScraping Summary:")
-        for product in products_data:
-            if product:
-                print(f"- {product.get('name', 'Unknown')}: {product.get('price', 'No price')}")
-                if product.get('sizes'):
-                    print(f"  Sizes: {', '.join(product.get('sizes', []))}")
-                if product.get('variations'):
-                    print(f"  Variations: {', '.join(product.get('variations', []))}")
+        # Save to CSV
+        filename = save_to_csv([product_info], 'test_product.csv')
+        print(f"Test data saved to {filename}")
     else:
-        print("No product data was extracted")
+        print("Failed to extract product information")
 
 if __name__ == "__main__":
     main()

@@ -137,9 +137,11 @@ dmypy.json
 ehthumbs.db
 Thumbs.db
 
-# Exclude all CSV files except the main output
-*.csv
+# CSV files - include the main output files
 !bbeox_all_products.csv
 !bbeox_final_products.csv
 !bbeox_products_detailed.csv
 !bbeox_products.csv
+
+# But exclude any other CSV files that might be generated
+*.csv
