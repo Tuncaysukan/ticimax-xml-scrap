@@ -1,10 +1,10 @@
-# Bbeox.com Ürün Kazıyıcı
+# domain.com Ürün Kazıyıcı
 
-Bu proje, [bbeox.com](https://www.bbeox.com/) adresinden ürün adları, fiyatlar, açıklamalar, resimler, varyasyonlar ve beden bilgileri gibi ürün verilerini kazır. Veriler, kolay analiz ve kullanım için CSV formatında dışa aktarılır.
+Bu proje,  adresinden ürün adları, fiyatlar, açıklamalar, resimler, varyasyonlar ve beden bilgileri gibi ürün verilerini kazır. Veriler, kolay analiz ve kullanım için CSV formatında dışa aktarılır.
 
 ## Özellikler
 
-- Bbeox.com'dan ürün bilgilerini çıkarır
+- domain.com'dan ürün bilgilerini çıkarır
 - Ürün adları, fiyatlar, açıklamalar ve resimleri toplar
 - Verileri CSV formatında düzenler
 - Ürün varyasyonlarını ve beden seçeneklerini işler
@@ -12,8 +12,8 @@ Bu proje, [bbeox.com](https://www.bbeox.com/) adresinden ürün adları, fiyatla
 
 ## Dosyalar
 
-- `bbeox_all_products.csv` - Tam ürün verisi (149 ürün)
-- `scrape_bbeox.py` - requests ve BeautifulSoup kullanan temel kazıma betiği
+- `domain_all_products.csv` - Tam ürün verisi (149 ürün)
+- `scrape_domain.py` - requests ve BeautifulSoup kullanan temel kazıma betiği
 - `advanced_scraper.py` - Geliştirilmiş seçicilerle daha iyi kazıma betiği
 - `final_scraper.py` - Son ve kapsamlı kazıma betiği
 - `selenium_scraper.py` - Dinamik içerik için Selenium tabanlı kazıma betiği
@@ -67,8 +67,8 @@ python selenium_scraper.py
 ## Proje Yapısı
 
 ```
-├── bbeox_all_products.csv      # 149 ürünle ana çıktı dosyası
-├── scrape_bbeox.py             # requests kullanan temel kazıyıcı
+├── domain_all_products.csv      # 149 ürünle ana çıktı dosyası
+├── scrape_domain.py             # requests kullanan temel kazıyıcı
 ├── advanced_scraper.py         # Geliştirilmiş seçicilerle kazıyıcı
 ├── final_scraper.py            # Son ve kapsamlı kazıyıcı
 ├── selenium_scraper.py         # JS içeriği için Selenium tabanlı kazıyıcı
